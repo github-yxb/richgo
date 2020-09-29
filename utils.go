@@ -1,0 +1,5 @@
+package richGo
+
+func RecoverError() {
+
+}

@@ -1,0 +1,32 @@
+etcd:
+  - 120.24.54.6:2379
+
+nodes:
+  gate_node:
+      rpc_port: 9998
+      web_port: 9999
+      modules:
+        gate_1:
+          module: GateModule
+          net_port: 10000
+        gate_2:
+          module: GateModule
+          net_port: 20000
+
+  node_2:
+      rpc_port: 20000
+      web_port: 20001
+      modules:
+        login_1:
+          module: LoginModule
+        majiang_1:
+          module: MajiangModule
+        majiang_2:
+          module: MajiangModule
+
+  test_node:
+      rpc_port: 30000
+      web_port: 30001
+      modules:
+        tm1:
+          module: TestModule
