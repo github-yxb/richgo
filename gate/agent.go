@@ -1,22 +1,22 @@
 package gate
 
 import (
+	"github.com/github-yxb/richgo/base"
 	"github.com/sirupsen/logrus"
 	"io"
 	"net"
-	"richGo/base"
 )
 
 type Agent struct {
-	conn net.Conn
-	sendCh chan []byte
-	packet base.IPacket
+	conn    net.Conn
+	sendCh  chan []byte
+	packet  base.IPacket
 	handler base.IGateHandler
 }
 
 func NewAgent(conn net.Conn) *Agent {
 	a := &Agent{
-		conn: conn,
+		conn:   conn,
 		sendCh: make(chan []byte),
 	}
 

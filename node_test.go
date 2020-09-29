@@ -3,13 +3,13 @@ package richGo
 import (
 	"context"
 	"fmt"
+	"github.com/github-yxb/richgo/base"
+	"github.com/github-yxb/richgo/module"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"os"
-	"richGo/base"
-	"richGo/module"
 	"testing"
 	"time"
-	"github.com/sirupsen/logrus"
 )
 
 type TestModule struct {
@@ -33,7 +33,7 @@ func (m *TestModule) HandleOneErr(x, y int, n string) error {
 func (m *TestModule) HandleTwoRet(x, y int, n string) (error, string) {
 	fmt.Println("handle remote call:", x, y, n)
 
-	if x * y == 100 {
+	if x*y == 100 {
 		return nil, n + " success"
 	}
 
@@ -45,7 +45,7 @@ func (m *TestModule) HandleOneRet(x, y int, n string) string {
 	return n + " success"
 }
 
-func (m *TestModule) HandleNoRet(x, y int, n string)  {
+func (m *TestModule) HandleNoRet(x, y int, n string) {
 	fmt.Println("handle remote call:", x, y, n)
 }
 
@@ -57,8 +57,8 @@ func addModuleToNode() {
 
 	moduleFactory := func(map[string]interface{}) base.IModule {
 		return &TestModule{
-			ActorModule : module.ActorModule{
-				Tag: "tm1",
+			ActorModule: module.ActorModule{
+				Tag:  "tm1",
 				Name: "TestModule",
 				Node: node,
 			},
@@ -82,13 +82,13 @@ func TestRemoteCall(t *testing.T) {
 		node.Start("test_node")
 	}()
 
-	time.Sleep(time.Second * 3)  // 等待模块注册
+	time.Sleep(time.Second * 3) // 等待模块注册
 
 	args := RemoteArgs{
-		moduleTag: "tm1",
+		moduleTag:    "tm1",
 		moduleMethod: "HandleTwoRet",
-		needReply: true,
-		args: []interface{}{10, 10, "from remote"},
+		needReply:    true,
+		args:         []interface{}{10, 10, "from remote"},
 	}
 
 	reply := RemoteReply{}
@@ -100,10 +100,10 @@ func TestRemoteCall(t *testing.T) {
 	}
 
 	args2 := RemoteArgs{
-		moduleTag: "tm1",
+		moduleTag:    "tm1",
 		moduleMethod: "HandleOneErr",
-		needReply: true,
-		args: []interface{}{10, 10, "from remote"},
+		needReply:    true,
+		args:         []interface{}{10, 10, "from remote"},
 	}
 
 	reply2 := RemoteReply{}
@@ -112,10 +112,10 @@ func TestRemoteCall(t *testing.T) {
 	t.Log(err2, reply2.reply)
 
 	args3 := RemoteArgs{
-		moduleTag: "tm1",
+		moduleTag:    "tm1",
 		moduleMethod: "HandleOneRet",
-		needReply: true,
-		args: []interface{}{10, 10, "from remote"},
+		needReply:    true,
+		args:         []interface{}{10, 10, "from remote"},
 	}
 
 	reply3 := RemoteReply{}

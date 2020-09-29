@@ -1,25 +1,24 @@
 package gate
 
 import (
+	"github.com/github-yxb/richgo/base"
 	"github.com/sirupsen/logrus"
 	"net"
-	"richGo/base"
 	"sync"
 )
 
 type TcpServer struct {
-	connMap map[net.Conn]bool
+	connMap  map[net.Conn]bool
 	connLock sync.Mutex
-	packet base.IPacket
-	handler base.IGateHandler
-
+	packet   base.IPacket
+	handler  base.IGateHandler
 }
 
 func NewTcpServer(packet base.IPacket, handler base.IGateHandler) *TcpServer {
 	s := &TcpServer{
-		connMap: make(map[net.Conn]bool),
-		packet: packet,
-		handler: handler,
+		connMap:  make(map[net.Conn]bool),
+		packet:   packet,
+		handler:  handler,
 		connLock: sync.Mutex{},
 	}
 

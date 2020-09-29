@@ -1,8 +1,10 @@
 package actor
 
+import "github.com/github-yxb/richgo/utils"
+
 type Actor struct {
 	taskQueue chan func()
-	cancelCh chan struct{}
+	cancelCh  chan struct{}
 }
 
 func (a *Actor) Call(t func() interface{}) interface{} {
@@ -19,18 +21,14 @@ func (a *Actor) Post(t func()) {
 
 func (a *Actor) Stop() {
 	select {
-		case a.cancelCh <- struct{}{}:
-		default:
-			return
-		}
+	case a.cancelCh <- struct{}{}:
+	default:
+		return
+	}
 }
-
 
 func (a *Actor) Start() {
 	defer func() {
-		//if err := recover(); err != nil {
-		//
-		//}
 		close(a.taskQueue)
 		close(a.cancelCh)
 	}()
@@ -40,10 +38,10 @@ func (a *Actor) Start() {
 
 	for {
 		select {
-			case t := <- a.taskQueue:
-				t()
-			case <- a.cancelCh:
-				return
+		case t := <-a.taskQueue:
+			utils.Protect(t)
+		case <-a.cancelCh:
+			return
 		}
 	}
 }

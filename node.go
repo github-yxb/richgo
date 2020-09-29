@@ -3,8 +3,8 @@ package richGo
 import (
 	"context"
 	"fmt"
+	"github.com/github-yxb/richgo/module"
 	"reflect"
-	"richGo/module"
 	"sync"
 	"time"
 
@@ -16,10 +16,10 @@ import (
 )
 
 type RemoteArgs struct {
-	moduleTag string
+	moduleTag    string
 	moduleMethod string
-	needReply bool
-	args []interface{}
+	needReply    bool
+	args         []interface{}
 }
 
 type RemoteReply struct {
@@ -27,19 +27,21 @@ type RemoteReply struct {
 }
 
 const ETCD_BASE_PATH = "/richgo_modules"
+
 var once sync.Once
+
 //Node 在进程中只有一个，管理modules,存储配置等
 type Node struct {
 	config        *viper.Viper
 	moduleManager *module.ModuleManager
-	rpcServer *rServer.Server
-	rpcClient *rClient.OneClient
+	rpcServer     *rServer.Server
+	rpcClient     *rClient.OneClient
 }
 
 var node *Node
 
 func GetNode(config *viper.Viper) *Node {
-	once.Do(func(){
+	once.Do(func() {
 		node = &Node{config: config, moduleManager: module.NewModuleManager()}
 	})
 
@@ -82,8 +84,8 @@ func (n *Node) Start(nodeName string) {
 	n.rpcServer = rServer.NewServer()
 	etcd := &serverplugin.EtcdV3RegisterPlugin{
 		ServiceAddress: "tcp@" + rpcAddress,
-		EtcdServers: etcdAddr,
-		BasePath: ETCD_BASE_PATH,
+		EtcdServers:    etcdAddr,
+		BasePath:       ETCD_BASE_PATH,
 		UpdateInterval: time.Second * 5,
 	}
 
@@ -125,14 +127,14 @@ func (n *Node) RemoteCall(ctx context.Context, args *RemoteArgs, reply *RemoteRe
 		return fmt.Errorf("can't find moduld:%s method:%s", args.moduleTag, args.moduleMethod)
 	}
 
-	if method.Type.NumIn() - 1 != len(args.args) {
-		return fmt.Errorf("number of method params error, need-%d, args-%d", method.Type.NumIn() - 1, len(args.args))
+	if method.Type.NumIn()-1 != len(args.args) {
+		return fmt.Errorf("number of method params error, need-%d, args-%d", method.Type.NumIn()-1, len(args.args))
 	}
 
 	var moduleCallFuncName string
 	var inFunc interface{}
 
-	tmpInFunc := func () interface{} {
+	tmpInFunc := func() interface{} {
 		inArgs := make([]reflect.Value, 0)
 		inArgs = append(inArgs, reflect.ValueOf(targetModule))
 		for _, item := range args.args {
@@ -180,13 +182,13 @@ func (n *Node) RemoteCall(ctx context.Context, args *RemoteArgs, reply *RemoteRe
 }
 
 // 调用远程模块的方法,需要返回值
-func (n* Node) Call(moduleTag, method string, args ...interface{}) interface{} {
+func (n *Node) Call(moduleTag, method string, args ...interface{}) interface{} {
 
 	remoteArg := RemoteArgs{
-		moduleTag: moduleTag,
+		moduleTag:    moduleTag,
 		moduleMethod: method,
-		args: args,
-		needReply: true,
+		args:         args,
+		needReply:    true,
 	}
 
 	reply := RemoteReply{}
@@ -199,13 +201,13 @@ func (n* Node) Call(moduleTag, method string, args ...interface{}) interface{} {
 }
 
 // 调用远程模块的方法，无需返回值
-func (n* Node) Send(moduleTag, method string, args ...interface{}) error {
+func (n *Node) Send(moduleTag, method string, args ...interface{}) error {
 
 	remoteArg := RemoteArgs{
-		moduleTag: moduleTag,
+		moduleTag:    moduleTag,
 		moduleMethod: method,
-		args: args,
-		needReply: true,
+		args:         args,
+		needReply:    true,
 	}
 
 	reply := RemoteReply{}
